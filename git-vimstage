@@ -1,4 +1,8 @@
 #!/bin/sh
+[ $# -ne 1 ] && {
+	echo "Usage: git vimstage <file>"
+	exit 1
+}
 set -e -x
 current=$(mktemp --suffix=.vimstage)
 (
