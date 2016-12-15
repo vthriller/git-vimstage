@@ -3,6 +3,7 @@
 	echo "Usage: git vimstage <file>"
 	exit 1
 }
+DEDITOR=$(git config --get vimstage.editor || echo vimdiff)
 set -e -x
 current=$(mktemp --suffix=.vimstage)
 (
@@ -10,7 +11,7 @@ current=$(mktemp --suffix=.vimstage)
 	(
 		git show :./"$1" > "$current"
 		cp "$current" "$future"
-		vimdiff "$future" "$1"
+		"$DEDITOR" "$future" "$1"
 		diff -u --label="./$1"{,} "$current" "$future" | git apply --cached
 	)
 	rm -f "$future"
