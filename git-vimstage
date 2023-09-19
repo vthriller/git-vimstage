@@ -14,18 +14,17 @@ file=$(realpath "$1")
 file=${file#$top/}
 (
 	if git ls-files --stage --error-unmatch "$file" >/dev/null 2>&1; then
-		future=$(mktemp --suffix=.vimstage)
 		(
 			git show :"$file" > "$current"
-			cp "$current" "$future"
-			"$DEDITOR" "$future" "$1"
-			diff -u --label="$file"{,} "$current" "$future" | git apply --cached
+			"$DEDITOR" "$current" "$1"
 		)
-		rm -f "$future"
+		mode=$(git ls-files --stage -- "$file" | cut -d' ' -f1)
 	else
 		cp "$1" "$current"
 		"$EDITOR" "$current"
-		diff -u /dev/null --label /dev/null --label "$file" "$current" | git apply --cached
+		mode=$(stat --format %a "$1")
 	fi
+	hash=$(git hash-object -t blob -w --path="$file" -- "$current")
+	git update-index --add --cacheinfo "$mode,$hash,$file"
 )
 rm -f "$current"
