@@ -9,20 +9,21 @@ test -z "$EDITOR" && EDITOR=vi
 set -e -x
 
 current=$(mktemp --suffix=.vimstage)
+dir=$(git rev-parse --show-prefix)
 (
-	if git ls-files --stage --error-unmatch "./$1" >/dev/null 2>&1; then
+	if git ls-files --stage --error-unmatch "$dir$1" >/dev/null 2>&1; then
 		future=$(mktemp --suffix=.vimstage)
 		(
-			git show :./"$1" > "$current"
+			git show :"$dir$1" > "$current"
 			cp "$current" "$future"
 			"$DEDITOR" "$future" "$1"
-			diff -u --label="./$1"{,} "$current" "$future" | git apply --cached
+			diff -u --label="$dir$1"{,} "$current" "$future" | git apply --cached
 		)
 		rm -f "$future"
 	else
 		cp "$1" "$current"
 		"$EDITOR" "$current"
-		diff -u /dev/null --label /dev/null --label "./$1" "$current" | git apply --cached
+		diff -u /dev/null --label /dev/null --label "$dir$1" "$current" | git apply --cached
 	fi
 )
 rm -f "$current"
