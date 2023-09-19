@@ -8,19 +8,19 @@ test -z "$EDITOR" && EDITOR="vi"
 
 set -e -x
 
-current=$(mktemp --suffix=.vimstage)
+tmp=$(mktemp --suffix=.vimstage)
 top=$(git rev-parse --show-toplevel)
 file=$(realpath "$1")
 file=${file#$top/}
 cd "$top"
 (
 	if git ls-files --stage --error-unmatch -- "$file" >/dev/null 2>&1; then
-		git show :"$file" > "$current"
-		"$DEDITOR" "$current" "$file"
+		git show :"$file" > "$tmp"
+		"$DEDITOR" "$tmp" "$file"
 		mode=$(git ls-files --stage -- "$file" | cut -d' ' -f1)
 	else
-		cp "$file" "$current"
-		"$EDITOR" "$current"
+		cp "$file" "$tmp"
+		"$EDITOR" "$tmp"
 		case "$(uname -s)" in
 			Linux) mode=100$(stat --format %a "$file") ;;
 			FreeBSD) mode=$(stat -f %p "$file") ;;
@@ -30,7 +30,7 @@ cd "$top"
 				;;
 		esac
 	fi
-	hash=$(git hash-object -t blob -w --path="$file" -- "$current")
+	hash=$(git hash-object -t blob -w --path="$file" -- "$tmp")
 	git update-index --add --cacheinfo "$mode,$hash,$file"
 )
-rm -f "$current"
+rm -f "$tmp"
