@@ -14,10 +14,8 @@ file=$(realpath "$1")
 file=${file#$top/}
 (
 	if git ls-files --stage --error-unmatch "$file" >/dev/null 2>&1; then
-		(
-			git show :"$file" > "$current"
-			"$DEDITOR" "$current" "$1"
-		)
+		git show :"$file" > "$current"
+		"$DEDITOR" "$current" "$1"
 		mode=$(git ls-files --stage -- "$file" | cut -d' ' -f1)
 	else
 		cp "$1" "$current"
