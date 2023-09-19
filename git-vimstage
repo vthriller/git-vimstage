@@ -9,7 +9,9 @@ test -z "$EDITOR" && EDITOR=vi
 set -e -x
 
 current=$(mktemp --suffix=.vimstage)
-file="$(git rev-parse --show-prefix)${1#./}"
+top=$(git rev-parse --show-toplevel)
+file=$(realpath "$1")
+file=${file#$top/}
 (
 	if git ls-files --stage --error-unmatch "$file" >/dev/null 2>&1; then
 		future=$(mktemp --suffix=.vimstage)
