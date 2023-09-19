@@ -21,7 +21,14 @@ cd "$top"
 	else
 		cp "$file" "$current"
 		"$EDITOR" "$current"
-		mode=$(stat --format %a "$file")
+		case "$(uname -s)" in
+			Linux) mode=100$(stat --format %a "$file") ;;
+			FreeBSD) mode=$(stat -f %p "$file") ;;
+			*)
+				echo "WARNING: unsupported OS, assuming rw-r--r--"
+				mode=100644
+				;;
+		esac
 	fi
 	hash=$(git hash-object -t blob -w --path="$file" -- "$current")
 	git update-index --add --cacheinfo "$mode,$hash,$file"
