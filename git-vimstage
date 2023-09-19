@@ -12,15 +12,16 @@ current=$(mktemp --suffix=.vimstage)
 top=$(git rev-parse --show-toplevel)
 file=$(realpath "$1")
 file=${file#$top/}
+cd "$top"
 (
-	if git ls-files --stage --error-unmatch "$file" >/dev/null 2>&1; then
+	if git ls-files --stage --error-unmatch -- "$file" >/dev/null 2>&1; then
 		git show :"$file" > "$current"
-		"$DEDITOR" "$current" "$1"
+		"$DEDITOR" "$current" "$file"
 		mode=$(git ls-files --stage -- "$file" | cut -d' ' -f1)
 	else
-		cp "$1" "$current"
+		cp "$file" "$current"
 		"$EDITOR" "$current"
-		mode=$(stat --format %a "$1")
+		mode=$(stat --format %a "$file")
 	fi
 	hash=$(git hash-object -t blob -w --path="$file" -- "$current")
 	git update-index --add --cacheinfo "$mode,$hash,$file"
