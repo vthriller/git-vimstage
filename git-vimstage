@@ -4,7 +4,7 @@
 	exit 1
 }
 DEDITOR=$(git config --get vimstage.editor || echo vimdiff)
-test -z "$EDITOR" && EDITOR=vi
+test -z "$EDITOR" && EDITOR="vi"
 
 set -e -x
 
