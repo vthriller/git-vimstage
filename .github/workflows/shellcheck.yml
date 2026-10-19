@@ -1,0 +1,23 @@
+name: Shellcheck
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: Shellcheck linter
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # Run shellcheck
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
