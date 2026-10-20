@@ -11,7 +11,7 @@ set -e -x
 tmp=$(mktemp --suffix=.vimstage)
 top=$(git rev-parse --show-toplevel)
 file=$(realpath "$1")
-file=${file#$top/}
+file=${file#"$top"/}
 cd "$top"
 (
 	if git ls-files --stage --error-unmatch -- "$file" >/dev/null 2>&1; then
