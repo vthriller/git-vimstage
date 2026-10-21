@@ -35,8 +35,8 @@ if [ ! -e "$1" ]; then
 	exit 128
 fi
 
-if [ ! -r "$1" ]; the 
-	echo "fatal: path '${1}' is not readable">&2
+if [ ! -r "$1" ]; then
+	echo "fatal: path '${1}' is not readable" >&2
 	exit 128
 fi
 
