@@ -1,12 +1,49 @@
 #!/bin/sh
-[ $# -ne 1 ] && {
-	echo "Usage: git vimstage <file>"
-	exit 1
+
+usage() {
+	echo "usage: git vimstage [<options>] <path>
+
+    -h    show usage
+    -x    enable debug output" >&2
 }
+
+while getopts 'hx' opt; do
+	case $opt in
+	h)
+		usage
+		exit 0
+		;;
+	x)
+		set -x
+		;;
+	\?)
+		usage
+		exit 129
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+
+if [ $# -ne 1 ]; then
+	echo "fatal: need path" >&2
+	usage
+	exit 128
+fi
+
+if [ ! -e "$1" ]; then
+	echo "fatal: path '${1}' did not match any files" >&2
+	exit 128
+fi
+
+if [ ! -r "$1" ]; then
+	echo "fatal: path '${1}' is not readable" >&2
+	exit 128
+fi
+
 DEDITOR=$(git config --get vimstage.editor || echo vimdiff)
 test -z "$EDITOR" && EDITOR="vi"
 
-set -e -x
+set -e
 
 tmp=$(mktemp --suffix=.vimstage)
 top=$(git rev-parse --show-toplevel)
